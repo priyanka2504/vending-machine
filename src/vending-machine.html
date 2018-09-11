@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- <link rel="stylesheet" href="vending-machine.css"> -->
+    <meta charset="UTF-8">
+    <title>
+        Vending Machine
+    </title>
+    <script>
+        var items = [
+            {
+                id: 1,
+                productName: 'COOKIES',
+                productImage: '<img class="rounded mx-auto d-block btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Cookies" alt="Cookies" src="cookies.jpg" height="80" width="100">',
+                quantity: '10'
+            },
+            {
+                id: 2,
+                productName: 'CHIPS',
+                productImage: '<img class="rounded mx-auto d-block btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Chips" alt="Chips" src="chips.jpg" height="80" width="100">',
+                quantity: '10'
+            },
+            {
+                id: 3,
+                productName: 'CHOCOLATE',
+                productImage: '<img class="rounded mx-auto d-block btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Chocolate" alt="Chocolate" src="chocolate.jpg" height="80" width="100">',
+                quantity: '10'
+            },
+            {
+                id: 4,
+                productName: 'BISCUITS',
+                productImage: '<img class="rounded mx-auto d-block btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Biscuit" alt="Biscuits" src="biscuits.jpg" height="80" width="100">',
+                quantity: '10'
+            },
+            {
+                id: 5,
+                productName: 'JUICE',
+                productImage: '<img class="rounded mx-auto d-block btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Juice" alt="Juice" src="juice.jpg" height="80" width="100">',
+                quantity: '10'
+            },
+            {
+                id: 6,
+                productName: 'WATER BOTTLE',
+                productImage: '<img class="rounded mx-auto d-block btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Water Bottle" alt="Water Bottle" src="water-bottle.jpg" height="80" width="100">',
+                quantity: '10'
+            }
+        ]
+
+        function createTable() {
+            var html = '<table class="table table-striped text-primary table-bordered" border=1 width: 100% text-align= "center" id="table">';
+            html += '<tr class="text-uppercase table-success">';
+            html += '<th scope="col"> Item Name </th>'
+            html += '<th scope="col"> Items </th>'
+            html += '<th scope="col"> Quantity Available </th>'
+            html += '</tr>';
+            var i;
+            for (i = 0; i < items.length; i++) {
+                html += '<tr>';
+                html += '<td class="lead">' + items[i].productName + '</td>';
+                html += '<td class="lead">' + items[i].productImage + '</td>';
+                html += '<td class="lead">' + items[i].quantity + '</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('items').innerHTML = html;
+        }
+
+        function checkInput(inputValue) {
+            document.getElementById('success').innerHTML = '';
+            document.getElementById('error').innerHTML = '';
+            const result = items.find(input => input.productName === inputValue);
+            console.log(result);
+
+            if (!result) {
+                document.getElementById('inputValidation').innerHTML = 'Item does not exists';
+            }
+            else {
+                document.getElementById('inputValidation').innerHTML = '';
+            }
+            createTable();
+            renderOptions();
+        }
+
+        function purchaseProduct(inputValue) {
+            var quantityIndex = document.getElementById('quantitySelected').selectedIndex;
+            var quantitySelected = document.getElementsByTagName('option')[quantityIndex].value;
+            var result = items.find(input => input.productName === inputValue);
+            var updatedQuantity = result.quantity - quantitySelected;
+
+            document.getElementById('success').innerHTML = 'Item purchased';
+            document.getElementById('productToPurchase').value = '';
+            document.getElementById('quantitySelected').value = '';
+
+            if (parseInt(quantitySelected) < parseInt(result.quantity) && parseInt(result.quantity) > 0) {
+                document.getElementById('success').innerHTML = '';
+                document.getElementById('error').innerHTML = 'Not enough items to serve';
+                result.quantity = updatedQuantity;
+                document.getElementById('success').innerHTML = 'Item purchased';
+                createTable();
+                document.getElementById('error').innerHTML = '';
+            }
+            else if (parseInt(result.quantity) == 0 || parseInt(quantitySelected) > parseInt(result.quantity)) {
+                createTable();
+                document.getElementById('success').innerHTML = '';
+                document.getElementById('error').innerHTML = 'Not enough items to serve';
+            }
+            else {
+                var result = items.find(input => input.productName === inputValue);
+                const update = result.quantity = updatedQuantity;
+                result.quantity = updatedQuantity;
+                createTable();
+            }
+        }
+
+        function renderOptions() {
+            var options = "";
+            for (var i = 1; i <= 10; i++) {
+                options += "<option>" + i + "</option>";
+            }
+            document.getElementById("quantitySelected").innerHTML = options;
+        }
+
+    </script>
+</head>
+
+<body onLoad='createTable()' class="bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-xl">
+                <h2 class="text-success" align='center'> Vending Machine </h2>
+                <p id='items'> </p>
+                <form>
+                    <div class="row">
+                    <!-- <div class="form-group col-md-6"> -->
+                    <div class="col">
+                    <input type='text' class="form-group col-md-4" id='productToPurchase' name='productToPurchase' placeholder='Enter product to purchase'
+                        onChange='checkInput(document.getElementById("productToPurchase").value.toUpperCase())' />
+                    </div>
+
+                    <div class="dropdown">
+                        <div class="col">
+                        <select class="form-group col-md-4 btn btn-dark" id="quantitySelected">
+                            <option selected>Select quantity...</option>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col">
+                    <input type='button' class="form-group col-md-4 btn btn-primary lead text-danger font-weight-bold" value='Purchase' name='purchase' onClick='purchaseProduct(document.getElementById("productToPurchase").value.toUpperCase())'
+                    />
+                    </div>
+                    <!-- </div> -->
+                    </div>
+                </form>
+
+                <p class="lead text-danger font-weight-bold" style="color:red" id='inputValidation'> </p>
+                <p class="lead text-success font-weight-bold" style="color:green" id='success'> </p>
+                <p class="lead text-danger font-weight-bold" style="color:red" id='error'> </p>
+            </div>
+        </div>
+    </div> 
+</body>
+
+</html>
